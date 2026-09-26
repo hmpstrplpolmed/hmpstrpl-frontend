@@ -33,6 +33,7 @@ const Footer = () => {
                                 </Text>
                                 <a href="/" className="text-xs text-secondary hover:text-primary transition-colors decoration-none font-sans">Beranda</a>
                                 <a href="/organisasi" className="text-xs text-secondary hover:text-primary transition-colors decoration-none font-sans">Struktur Organisasi</a>
+                                <a href="/video" className="text-xs text-secondary hover:text-primary transition-colors decoration-none font-sans">Video & Tutorial</a>
                                 <a href="/blog" className="text-xs text-secondary hover:text-primary transition-colors decoration-none font-sans">Artikel & Berita</a>
                                 <a href="/kontak" className="text-xs text-secondary hover:text-primary transition-colors decoration-none font-sans">Hubungi Kami</a>
                             </VStack>

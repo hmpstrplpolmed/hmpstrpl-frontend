@@ -12,6 +12,7 @@ const NAV_LINKS = [
     // { href: '/blog', label: 'Kelulusan' },
     { href: '#', label: 'Divisi' },
     { href: '/berita', label: 'Berita' },
+    { href: '/video', label: 'Video' },
     { href: '/blog?category=article', label: 'Artikel' },
 ];
 
@@ -24,14 +25,23 @@ const Navbar = () => {
     const [mobileDivisiSubmenuOpen, setMobileDivisiSubmenuOpen] = useState(false);
 
     const [periods, setPeriods] = useState<{ slug: string; label: string }[]>([
+        { slug: '2026-2027', label: '2026/2027' },
         { slug: '2025-2026', label: '2025/2026' },
         { slug: '2024-2025', label: '2024/2025' },
         { slug: '2023-2024', label: '2023/2024' },
         { slug: '2022-2023', label: '2022/2023' },
     ]);
 
-    const [divisi, setDivisi] = useState<{ alias: string, name: string }[]>()
-    const [latestPeriod, setLatestPeriod] = useState('2025-2026')
+    const [divisi, setDivisi] = useState<{ alias: string, name: string }[]>([
+        { alias: 'badan-pengurus-harian', name: 'BPH' },
+        { alias: 'ilmu-pengetahun-dan-teknologi', name: 'IPTEK' },
+        { alias: 'komunikasi-dan-informasi', name: 'KOMINFO' },
+        { alias: 'keagamaan', name: 'Keagamaan' },
+        { alias: 'business-event-sponsorship', name: 'BES' },
+        { alias: 'minat-dan-bakat', name: 'MINBAT' },
+        { alias: 'pengembangan-organisasi-dan-sumber-daya-mahasiswa', name: 'POSDM' },
+    ]);
+    const [latestPeriod, setLatestPeriod] = useState('2026-2027');
 
     useEffect(() => {
         const loadPeriods = async () => {
@@ -93,7 +103,7 @@ const Navbar = () => {
                                 periodToCheck = sorted[0].slug || `${sorted[0].start_year}-${sorted[0].end_year}`;
                             }
                         }
-                        if (!periodToCheck) periodToCheck = '2025-2026';
+                        if (!periodToCheck) periodToCheck = '2026-2027';
 
                         const structRes = await fetch(`/api/v1/struktur-organisasi/${periodToCheck}`);
                         let membersMap: Record<string, number> = {};

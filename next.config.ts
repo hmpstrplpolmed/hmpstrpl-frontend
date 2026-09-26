@@ -4,7 +4,20 @@ const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN || "http://localhost:5000"
 
 const nextConfig: NextConfig = {
   /* config options here */
-  allowedDevOrigins: ["devhmps.ilmeee.com"],
+  allowedDevOrigins: ["devhmps.ilmeee.com", "192.168.18.7"],
+
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.ytimg.com' },
+      { protocol: 'https', hostname: '**.youtube.com' },
+    ],
+  },
+
+  async redirects() {
+    return [
+      { source: '/youtube', destination: '/video', permanent: false },
+    ];
+  },
 
   // Proxy the Rust API through this app's own origin. The browser may sit on a
   // public HTTPS host (tunnel/production) while the API listens on localhost —

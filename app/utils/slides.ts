@@ -96,16 +96,16 @@ function parseSlide(raw: string, fallbackId: string): SlideData {
     };
 }
 
-// Reads content/slides/*.md; slide order follows the filename sort,
-// so use numeric prefixes: 01-hero.md, 02-tentang.md, ...
+// Reads content/slides/*.mdx or *.md; slide order follows the filename sort,
+// so use numeric prefixes: 01-hero.mdx, 02-tentang.mdx, ...
 export function loadSlides(): SlideData[] {
     const dir = path.join(process.cwd(), 'content', 'slides');
     return fs.readdirSync(dir)
-        .filter(file => file.endsWith('.md'))
+        .filter(file => file.endsWith('.mdx') || file.endsWith('.md'))
         .sort()
         .map(file => {
             const raw = fs.readFileSync(path.join(dir, file), 'utf8');
-            const fallbackId = file.replace(/\.md$/, '').replace(/^\d+-/, '');
+            const fallbackId = file.replace(/\.mdx?$/, '').replace(/^\d+-/, '');
             return parseSlide(raw, fallbackId);
         });
 }

@@ -187,13 +187,19 @@ export function resolvePhoto(photo?: string): string | undefined {
 
 // Robust generic API fetcher with automatic mock fallback if request fails.
 // Pass { noStore: true } for data that must always be fresh (e.g. org structure).
-export async function apiFetch<T>(path: string, fallbackData: T, opts?: { noStore?: boolean }): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  fallbackData: T,
+  opts?: { noStore?: boolean; timeoutMs?: number }
+): Promise<T> {
+  const timeoutMs = opts?.timeoutMs ?? 3000;
   try {
     const res = await fetch(`${API_BASE_URL}${path}`, {
       ...(opts?.noStore ? { cache: 'no-store' as const } : { next: { revalidate: 60 } }),
       headers: {
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(timeoutMs),
     });
 
     if (!res.ok) {
@@ -352,11 +358,73 @@ Pastikan framework yang Anda gunakan memiliki komunitas aktif. Ini krusial ketik
 ];
 
 export const mockManagementYears: ManagementYear[] = [
+  { id: 3, start_year: 2026, end_year: 2027, slug: '2026-2027' },
   { id: 1, start_year: 2024, end_year: 2025, slug: '2024-2025' },
   { id: 2, start_year: 2023, end_year: 2024, slug: '2023-2024' }
 ];
 
 export const mockStrukturOrganisasi: Record<string, ManagementYear> = {
+  '2026-2027': {
+    id: 3,
+    start_year: 2026,
+    end_year: 2027,
+    slug: '2026-2027',
+    divisions: [
+      {
+        id: 1,
+        name: 'BPH',
+        alias: 'badan-pengurus-harian',
+        members: [
+          {
+            uuid: 'm-26-1',
+            name: 'Muhammad Farhan',
+            nim: '2305181001',
+            position: { id: 1, name: 'Ketua Umum' },
+            bio: 'Mahasiswa TRPL Polmed Kabinet Codevolution 2026/2027.',
+            photo: ''
+          },
+          {
+            uuid: 'm-26-2',
+            name: 'Welfrid Jeremy Pascha Hutagaol',
+            nim: '2505181002',
+            position: { id: 2, name: 'Wakil Ketua' },
+            bio: 'Mendampingi jalannya koordinasi internal dan eksternal BPH.',
+            photo: ''
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: 'IPTEK',
+        alias: 'ilmu-pengetahun-dan-teknologi',
+        members: [
+          {
+            uuid: 'm-26-3',
+            name: 'Rian Hidayat',
+            nim: '2305181020',
+            position: { id: 5, name: 'Kepala Divisi' },
+            bio: 'Fokus pada riset software engineering dan pelatihan coding.',
+            photo: ''
+          }
+        ]
+      },
+      {
+        id: 4,
+        name: 'KOMINFO',
+        alias: 'komunikasi-dan-informasi',
+        members: [
+          {
+            uuid: 'm-26-4',
+            name: 'Alya Ramadhani',
+            nim: '2305181035',
+            position: { id: 5, name: 'Kepala Divisi' },
+            bio: 'Mengelola kanal publikasi resmi dan branding sosial media HMPS.',
+            photo: ''
+          }
+        ]
+      }
+    ]
+  },
   '2024-2025': {
     id: 1,
     start_year: 2024,
@@ -504,6 +572,7 @@ Himpunan Mahasiswa Program Studi Teknologi Rekayasa Perangkat Lunak Politeknik N
 Pendirian himpunan ini diinisiasi oleh sekelompok mahasiswa angkatan pertama bersama dosen-dosen pembina prodi dengan visi mendirikan sebuah organisasi mahasiswa yang adaptif, inovatif, serta fokus menyalurkan bakat minat mahasiswa di bidang rekayasa perangkat lunak (software engineering).
 
 ### Perkembangan Kepengurusan
+
 - **Tahun 2021-2022**: Kepengurusan transisi difokuskan pada perumusan Anggaran Dasar & Anggaran Rumah Tangga (AD/ART) serta program pengenalan dasar organisasi.
 - **Tahun 2023-2024**: HMPS mulai mengadakan kolaborasi eksternal berupa bootcamp pemrograman bekerjasama dengan industri nasional.
 - **Tahun 2024-Sekarang**: Digitalisasi administrasi secara penuh serta peluncuran platform showcase karya mahasiswa.`,
@@ -515,14 +584,17 @@ Pendirian himpunan ini diinisiasi oleh sekelompok mahasiswa angkatan pertama ber
     uuid: 'page-2',
     title: 'Visi & Misi HMPS TRPL',
     slug: 'visi-misi',
-    body: `### Visi
-Menjadikan Himpunan Mahasiswa Program Studi Teknologi Rekayasa Perangkat Lunak (HMPS TRPL) Politeknik Negeri Medan sebagai pusat pengembangan akademik, kepemimpinan, dan kreativitas mahasiswa yang unggul, berintegritas, serta berdaya saing global dalam ekosistem teknologi digital.
+    body: `### Slogan Kabinet
+**Bertransformasi menuju aksi**
+
+### Visi
+Mewujudkan HMPS TRPL sebagai wadah transformasi mahasiswa yang adaptif, inovatif, dan kolaboratif dalam menciptakan aksi nyata serta karya yang berdampak bagi mahasiswa maupun perkembangan teknologi.
 
 ### Misi
-1. **Mengakselerasi Potensi Akademik & Praktis**: Menyelenggarakan kegiatan kajian teknologi, workshop coding intensif, dan bootcamp industri guna mendukung kapasitas pemrograman mahasiswa.
-2. **Membangun Kepemimpinan yang Solutif**: Membina mentalitas kepemimpinan dan manajemen organisasi yang adaptif terhadap perubahan iklim industri teknologi.
-3. **Mewadahi Solidaritas & Pengabdian**: Mengoptimalkan peran eksternal berupa aksi pengabdian masyarakat berbasis pemanfaatan perangkat lunak solutif (social software).
-4. **Mendorong Kolaborasi Lintas Disiplin**: Memfasilitasi pameran/showcase produk inovasi ciptaan mahasiswa TRPL untuk dipasarkan ke inkubator bisnis kampus dan umum.`,
+1. Menyelenggarakan program kerja yang inovatif, aplikatif, dan mampu mengembangkan keterampilan akademik maupun non-akademik mahasiswa TRPL.
+2. Membangun lingkungan organisasi yang suportif, progresif, dan terbuka terhadap kreativitas serta partisipasi aktif seluruh mahasiswa TRPL.
+3. Mendorong mahasiswa untuk bertransformasi melalui pengembangan potensi, kepemimpinan, kerja sama tim, dan pengalaman organisasi yang berdampak nyata.
+4. Menghadirkan HMPS TRPL yang relevan terhadap perkembangan teknologi serta menjadi wadah aspirasi, kolaborasi, dan kontribusi bagi mahasiswa maupun program studi.`,
     published_at: '2026-06-01T00:00:00Z',
     views: 180
   }
@@ -563,6 +635,7 @@ export async function apiAdminFetch<T>(path: string, fallbackData: T): Promise<T
     const res = await fetch(`${API_BASE_URL}${path}`, {
       headers: ADMIN_HEADERS,
       cache: 'no-store', // Always get fresh admin data
+      signal: AbortSignal.timeout(3500),
     });
 
     if (!res.ok) {

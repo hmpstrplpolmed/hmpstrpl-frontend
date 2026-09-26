@@ -49,7 +49,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
     // Active meme index for the interactive meme slide
     const [memeIndex, setMemeIndex] = useState(0);
     const [visiMisiTab, setVisiMisiTab] = useState<'visi' | 'misi'>('visi');
-    const [divisionTab, setDivisionTab] = useState<'ph' | 'iptek' | 'humas'>('ph');
+    const [divisionTab, setDivisionTab] = useState<'bph' | 'iptek' | 'kominfo'>('bph');
 
     // Layout coordinate mapping:
     // Slide 0 (Hero): row 0, col 0
@@ -398,11 +398,14 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
 
                                 {/* 3. VISI MISI SLIDE (1, 1) */}
                                 {s.id === 'visi-misi' && (
-                                    <VStack gap={4} align="stretch">
+                                    <VStack gap={4} align="stretch" className="w-full">
                                         <HStack justify="between" align="end">
                                             <VStack gap={1} align="start">
-                                                <Badge variant="blue" label={s.badge} />
-                                                <Heading level={1} className="text-primary font-sans">{s.title}</Heading>
+                                                <HStack gap={2} align="center">
+                                                    <Badge variant="blue" label={s.badge} />
+                                                    <Badge variant="neutral" label="Codevolution" />
+                                                </HStack>
+                                                <Heading level={1} className="text-primary font-sans leading-tight mt-0.5">{s.title}</Heading>
                                             </VStack>
                                             <Text type="supporting" color="disabled" className="text-xs font-mono">Slide {index + 1} dari {slides.length}</Text>
                                         </HStack>
@@ -421,19 +424,29 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                             </SegmentedControl>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-stretch">
                                             {/* Visi Column */}
-                                            <div className={`md:col-span-5 ${isMobile && visiMisiTab !== 'visi' ? 'hidden' : 'block'}`}>
-                                                <Card variant="default" padding={isMobile ? 4 : 6} className="h-full flex flex-col justify-between border-l-4 border-l-accent">
-                                                    <VStack gap={3} align="start">
-                                                        <Badge variant="info" label="Visi Utama" />
-                                                        <Heading level={2} className="text-primary font-sans text-lg md:text-xl mt-2">Pilar Visi</Heading>
-                                                        <Text type="body" color="secondary" className="font-sans leading-relaxed text-justify text-sm">
-                                                            {s.bullets[0] || 'Menjadikan HMPS TRPL Polmed sebagai pusat pengembangan akademik, kepemimpinan, dan kreativitas mahasiswa yang unggul, berintegritas, serta berdaya saing global.'}
+                                            <div className={`${isMobile && visiMisiTab !== 'visi' ? 'hidden' : 'block'}`}>
+                                                <Card variant="default" padding={isMobile ? 4 : 5} className="h-full flex flex-col justify-between border-l-4 border-l-accent shadow-xs">
+                                                    <VStack gap={2} align="start">
+                                                        <HStack justify="between" align="center" className="w-full">
+                                                            <Badge variant="info" label="Visi Utama" />
+                                                            <span className="text-[11px] font-mono text-accent uppercase tracking-wider font-semibold">
+                                                                Kabinet 2026-2027
+                                                            </span>
+                                                        </HStack>
+                                                        <Heading level={2} className="text-primary font-sans text-base md:text-lg font-bold mt-1">Pilar Visi</Heading>
+                                                        <Text type="body" color="secondary" className="font-sans leading-relaxed text-justify text-xs md:text-sm">
+                                                            {s.bullets[0] || 'Mewujudkan HMPS TRPL sebagai wadah transformasi mahasiswa yang adaptif, inovatif, dan kolaboratif dalam menciptakan aksi nyata serta karya yang berdampak bagi mahasiswa maupun perkembangan teknologi.'}
                                                         </Text>
+                                                        <div className="mt-2 pt-2 border-t border-border/40 w-full">
+                                                            <Text type="supporting" color="secondary" className="text-xs font-mono italic">
+                                                                Slogan: &ldquo;Bertransformasi menuju aksi&rdquo;
+                                                            </Text>
+                                                        </div>
                                                     </VStack>
-                                                    <div className="mt-6 pt-4 border-t border-border">
-                                                        <Link href="/page/visi-misi" className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans">
+                                                    <div className="mt-4 pt-3 border-t border-border">
+                                                        <Link href="/page/visi-misi" className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1">
                                                             Halaman Profil Visi &rarr;
                                                         </Link>
                                                     </div>
@@ -441,41 +454,37 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                             </div>
 
                                             {/* Misi Column */}
-                                            <div className={`md:col-span-5 ${isMobile && visiMisiTab !== 'misi' ? 'hidden' : 'block'}`}>
-                                                <Card variant="default" padding={isMobile ? 4 : 6} className="h-full flex flex-col justify-between">
-                                                    <VStack gap={4} align="stretch">
-                                                        <Heading level={2} className="text-primary font-sans text-lg md:text-xl">Misi Strategis</Heading>
-                                                        <VStack gap={3} align="stretch">
+                                            <div className={`${isMobile && visiMisiTab !== 'misi' ? 'hidden' : 'block'}`}>
+                                                <Card variant="default" padding={isMobile ? 4 : 5} className="h-full flex flex-col justify-between shadow-xs">
+                                                    <VStack gap={2} align="stretch">
+                                                        <HStack justify="between" align="center">
+                                                            <Heading level={2} className="text-primary font-sans text-base md:text-lg font-bold">Misi Strategis</Heading>
+                                                            <Badge variant="neutral" label="4 Butir Aksi" />
+                                                        </HStack>
+                                                        <VStack gap={2} align="stretch">
                                                             {(s.bullets.length > 1 ? s.bullets.slice(1) : [
-                                                                'HMPS yang bersih, mengayomi serta terbuka dalam menampung semua aspirasi mahasiswa.',
-                                                                'Mengembangkan sumber daya manusia yang terampil, profesional, dan toleransi.',
-                                                                'Membangun internal berdasarkan kekeluargaan demi mewujudkan solidaritas mahasiswa.'
+                                                                'Menyelenggarakan program kerja yang inovatif, aplikatif, dan mampu mengembangkan keterampilan akademik maupun non-akademik mahasiswa TRPL.',
+                                                                'Membangun lingkungan organisasi yang suportif, progresif, dan terbuka terhadap kreativitas serta partisipasi aktif seluruh mahasiswa TRPL.',
+                                                                'Mendorong mahasiswa untuk bertransformasi melalui pengembangan potensi, kepemimpinan, kerja sama tim, dan pengalaman organisasi yang berdampak nyata.',
+                                                                'Menghadirkan HMPS TRPL yang relevan terhadap perkembangan teknologi serta menjadi wadah aspirasi, kolaborasi, dan kontribusi bagi mahasiswa maupun program studi.'
                                                             ]).map((bullet, bulletIdx) => (
-                                                                <HStack key={bulletIdx} gap={3} align="start">
-                                                                    <span className="text-accent text-sm font-bold">{bulletIdx + 1}.</span>
-                                                                    <Text type="body" color="secondary" className="font-sans text-xs md:text-sm leading-relaxed text-justify">
+                                                                <HStack key={bulletIdx} gap={2} align="start">
+                                                                    <span className="w-5 h-5 rounded-md bg-accent/10 text-accent text-xs font-bold font-mono flex items-center justify-center shrink-0 border border-accent/20">
+                                                                        {bulletIdx + 1}
+                                                                    </span>
+                                                                    <Text type="body" color="secondary" className="font-sans text-[11px] md:text-xs leading-relaxed text-justify">
                                                                         {bullet}
                                                                     </Text>
                                                                 </HStack>
                                                             ))}
                                                         </VStack>
                                                     </VStack>
-                                                    <div className="mt-6 pt-4 border-t border-border">
-                                                        <Link href="/page/sejarah-hmps" className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans">
+                                                    <div className="mt-4 pt-3 border-t border-border">
+                                                        <Link href="/page/sejarah-hmps" className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1">
                                                             Baca Sejarah Organisasi &rarr;
                                                         </Link>
                                                     </div>
                                                 </Card>
-                                            </div>
-
-                                            {/* Sticker Space (right column) — sticker rendered by overlay system on click */}
-                                            <div className="md:col-span-2 hidden md:flex flex-col items-center justify-center">
-                                                {s.images.filter(img => img.overlay).length === 0 && (
-                                                    <div className="w-[80px] h-[80px] rounded-xl border-2 border-dashed border-border/30 flex flex-col items-center justify-center gap-1 opacity-20 select-none">
-                                                        <span className="text-xl">🖼</span>
-                                                        <span className="text-[9px] text-secondary font-mono text-center leading-tight">stiker</span>
-                                                    </div>
-                                                )}
                                             </div>
                                         </div>
                                     </VStack>
@@ -663,17 +672,20 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
 
                                 {/* 5. DIVISIONS SLIDE (1, 3) */}
                                 {s.id === 'divisions' && (
-                                    <VStack gap={6} align="stretch">
+                                    <VStack gap={5} align="stretch" className="w-full">
                                         <HStack justify="between" align="end">
                                             <VStack gap={1} align="start">
-                                                <Badge variant="blue" label={s.badge} />
-                                                <Heading level={1} className="text-primary font-sans">{s.title}</Heading>
+                                                <HStack gap={2} align="center">
+                                                    <Badge variant="blue" label={s.badge} />
+                                                    <Badge variant="neutral" label="Periode 2026-2027" />
+                                                </HStack>
+                                                <Heading level={1} className="text-primary font-sans leading-tight mt-0.5">{s.title}</Heading>
                                             </VStack>
                                             <Text type="supporting" color="disabled" className="text-xs font-mono">Slide {index + 1} dari {slides.length}</Text>
                                         </HStack>
                                         <Divider />
-                                        <Text type="body" color="secondary" className="font-sans max-w-xl text-justify text-sm leading-relaxed hidden md:block">
-                                            {s.description}
+                                        <Text type="body" color="secondary" className="font-sans max-w-xl text-justify text-xs md:text-sm leading-relaxed hidden md:block">
+                                            {s.description || 'HMPS TRPL terdiri dari berbagai departemen khusus yang bergerak secara sinergis mengurus program kerja internal dan eksternal.'}
                                         </Text>
 
                                         {/* Mobile Division Tab Switcher */}
@@ -684,55 +696,56 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                                 onChange={(val: string) => setDivisionTab(val as any)}
                                                 size="sm"
                                             >
-                                                <SegmentedControlItem value="ph" label="PH" />
+                                                <SegmentedControlItem value="bph" label="BPH" />
                                                 <SegmentedControlItem value="iptek" label="IPTEK" />
-                                                <SegmentedControlItem value="humas" label="Humas" />
+                                                <SegmentedControlItem value="kominfo" label="KOMINFO" />
                                             </SegmentedControl>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-1">
                                             {[
                                                 {
-                                                    name: 'Pengurus Harian (PH)',
-                                                    desc: 'Memimpin, mengoordinasi, dan mengawasi sirkulasi dokumen, arus keuangan kas, serta menyusun rencana strategis organisasi.',
+                                                    key: 'bph',
+                                                    name: 'Badan Pengurus Harian (BPH)',
+                                                    desc: 'Memimpin koordinasi organisasi, administrasi persuratan, notulensi rapat, dan transparansi keuangan kas HMPS.',
                                                     badge: 'Utama',
-                                                    color: 'neutral' as const
+                                                    color: 'neutral' as const,
+                                                    alias: 'badan-pengurus-harian'
                                                 },
                                                 {
+                                                    key: 'iptek',
                                                     name: 'Divisi IPTEK',
-                                                    desc: 'Mengembangkan kompetensi keilmuan, riset perangkat lunak, bootcamps pemrograman, serta mengasah keterampilan teknis anggota.',
+                                                    desc: 'Mengembangkan riset teknologi software, bootcamps pemrograman, serta mengasah keterampilan teknis mahasiswa TRPL.',
                                                     badge: 'Keilmuan',
-                                                    color: 'blue' as const
+                                                    color: 'blue' as const,
+                                                    alias: 'ilmu-pengetahun-dan-teknologi'
                                                 },
                                                 {
-                                                    name: 'Divisi Humas & Pengabdian',
-                                                    desc: 'Membangun jejaring alumni & industri IT, mengelola komunikasi publik media sosial, serta menginisiasi bakti sosial masyarakat.',
-                                                    badge: 'Eksternal',
-                                                    color: 'green' as const
+                                                    key: 'kominfo',
+                                                    name: 'Divisi KOMINFO',
+                                                    desc: 'Mengelola publikasi media sosial, branding visual kreatif, dokumentasi kegiatan, serta relasi komunikasi informasi eksternal.',
+                                                    badge: 'Informasi',
+                                                    color: 'purple' as const,
+                                                    alias: 'komunikasi-dan-informasi'
                                                 }
-                                            ].map((div, divIdx) => (
+                                            ].map((div) => (
                                                 <Card
-                                                    key={divIdx}
+                                                    key={div.key}
                                                     variant="muted"
-                                                    padding={3}
-                                                    className={`flex flex-col justify-between h-full ${isMobile && (
-                                                        (divIdx === 0 && divisionTab !== 'ph') ||
-                                                        (divIdx === 1 && divisionTab !== 'iptek') ||
-                                                        (divIdx === 2 && divisionTab !== 'humas')
-                                                    ) ? 'hidden' : 'flex'
-                                                        }`}
+                                                    padding={isMobile ? 3 : 4}
+                                                    className={`flex flex-col justify-between h-full transition-all duration-200 hover:border-accent/40 ${isMobile && divisionTab !== div.key ? 'hidden' : 'flex'}`}
                                                 >
-                                                    <VStack gap={3} align="start">
+                                                    <VStack gap={2} align="start">
                                                         <Badge variant={div.color} label={div.badge} />
-                                                        <Heading level={3} className="text-primary mt-2 text-md font-bold">{div.name}</Heading>
+                                                        <Heading level={3} className="text-primary mt-1 text-sm md:text-base font-bold font-sans">{div.name}</Heading>
                                                         <Text type="body" color="secondary" className="font-sans text-xs leading-relaxed text-justify">
                                                             {div.desc}
                                                         </Text>
                                                     </VStack>
-                                                    <div className="mt-6 pt-3 border-t border-border/50">
+                                                    <div className="mt-4 pt-3 border-t border-border/50">
                                                         <Link
-                                                            href={`/organisasi/2024-2025/${div.name.toLowerCase().includes('harian') ? 'ph' : div.name.toLowerCase().includes('iptek') ? 'iptek' : 'humas'}`}
-                                                            className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans"
+                                                            href={`/organisasi/2026-2027/${div.alias}`}
+                                                            className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1"
                                                         >
                                                             Lihat Roster Staff &rarr;
                                                         </Link>
