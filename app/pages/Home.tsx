@@ -319,7 +319,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                             </HStack>
                                         </VStack>
 
-                                        <div className="lg:col-span-5 flex items-center justify-center p-8 bg-surface border border-border rounded-3xl relative overflow-hidden group shadow-lg">
+                                        <div className="flex lg:col-span-5 items-center justify-center p-6 sm:p-8 bg-surface border border-border rounded-3xl relative overflow-hidden group shadow-lg">
                                             <div className="absolute inset-0 bg-radial-gradient from-accent/5 via-transparent to-transparent opacity-50 pointer-events-none" />
                                             <VStack gap={4} className="w-full relative z-10 text-center items-center">
                                                 <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mb-2">
