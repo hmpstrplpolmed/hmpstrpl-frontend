@@ -185,8 +185,35 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
         setSlideIndex(prev => Math.max(prev - 1, 0));
     };
 
+    // Track touch movements to distinguish between a scroll/swipe and a stationary tap
+    const isSwipingOrScrolling = React.useRef(false);
+    const touchStartPos = React.useRef({ x: 0, y: 0 });
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        isSwipingOrScrolling.current = false;
+        touchStartPos.current = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+        };
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        const dx = Math.abs(e.touches[0].clientX - touchStartPos.current.x);
+        const dy = Math.abs(e.touches[0].clientY - touchStartPos.current.y);
+        // If moved more than 10px, treat as scroll/drag, not a tap
+        if (dx > 10 || dy > 10) {
+            isSwipingOrScrolling.current = true;
+        }
+    };
+
     // Click handler split: left side goes back, right side goes next
     const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        // If user was scrolling/swiping with touch, do not advance slides
+        if (isSwipingOrScrolling.current) {
+            isSwipingOrScrolling.current = false;
+            return;
+        }
+
         const target = e.target as HTMLElement;
 
         // Ignore click on links, buttons, iframes, inputs, or selections
@@ -234,6 +261,8 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
         <div
             className="w-screen h-screen overflow-hidden relative bg-body text-primary font-sans select-none cursor-pointer"
             onClick={handleContainerClick}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
         >
 
             {/* Overlayed glassmorphic Navbar */}
@@ -251,8 +280,9 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                     return (
                         <div
                             key={index}
-                            className="absolute inset-0 w-full h-full flex flex-col justify-center items-center px-3 md:px-12 py-16 pb-20 md:py-24 transition-all duration-700 ease-out"
+                            className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden flex flex-col justify-start md:justify-center items-center px-4 md:px-12 pt-24 pb-28 md:py-24 transition-all duration-700 ease-out"
                             style={{
+                                WebkitOverflowScrolling: 'touch',
                                 transform: `translate(${dx * 100}%, ${dy * 100}%)`,
                                 opacity: isActive ? 1 : 0,
                                 pointerEvents: isActive ? 'auto' : 'none',
@@ -291,7 +321,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
 
                                 {/* 1. HERO SLIDE (0, 0) */}
                                 {s.id === 'hero' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
                                         <VStack gap={4} align="start" className="lg:col-span-7">
                                             <Badge variant="blue" label={s.badge} />
                                             <Heading level={1} type="display-1" className="text-primary font-sans leading-tight tracking-tight">
@@ -403,7 +433,6 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                             <VStack gap={1} align="start">
                                                 <HStack gap={2} align="center">
                                                     <Badge variant="blue" label={s.badge} />
-                                                    <Badge variant="neutral" label="Codevolution" />
                                                 </HStack>
                                                 <Heading level={1} className="text-primary font-sans leading-tight mt-0.5">{s.title}</Heading>
                                             </VStack>
@@ -658,14 +687,6 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                             </div>
 
                                             {/* Right Column Sticker Placeholder space */}
-                                            <div className="md:col-span-2 hidden md:flex flex-col items-center justify-center relative">
-                                                {s.images.filter(img => img.overlay).length === 0 && (
-                                                    <div className="w-[80px] h-[80px] rounded-xl border-2 border-dashed border-border/30 flex flex-col items-center justify-center gap-1 opacity-20 select-none">
-                                                        <span className="text-xl">🖼</span>
-                                                        <span className="text-[9px] text-secondary font-mono text-center leading-tight">stiker</span>
-                                                    </div>
-                                                )}
-                                            </div>
                                         </div>
                                     </VStack>
                                 )}
