@@ -145,6 +145,87 @@ export function parseYouTubeRss(xmlText: string): { channelName: string; videos:
   return { channelName, videos: entries };
 }
 
+const SCRAPE_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept-Language': 'en-US,en;q=0.9',
+  // Skip the EU consent interstitial
+  Cookie: 'CONSENT=YES+1; SOCS=CAI'
+};
+
+/**
+ * Converts YouTube relative time text ("3 months ago", "3mo ago") into an approximate ISO date.
+ */
+function relativeTimeToIso(text: string): string {
+  const match = text.match(/(\d+)\s*(second|sec|s|minute|min|hour|hr|h|day|d|week|wk|w|month|mo|year|yr|y)/i);
+  if (!match) return new Date().toISOString();
+  const amount = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+  const msPerUnit: Record<string, number> = {
+    s: 1000, sec: 1000, second: 1000,
+    min: 60_000, minute: 60_000,
+    h: 3_600_000, hr: 3_600_000, hour: 3_600_000,
+    d: 86_400_000, day: 86_400_000,
+    w: 604_800_000, wk: 604_800_000, week: 604_800_000,
+    mo: 2_592_000_000, month: 2_592_000_000,
+    y: 31_536_000_000, yr: 31_536_000_000, year: 31_536_000_000
+  };
+  return new Date(Date.now() - amount * (msPerUnit[unit] ?? 0)).toISOString();
+}
+
+/**
+ * Fallback when the RSS feed is unavailable: scrapes the channel's /videos tab (ytInitialData).
+ */
+export async function scrapeChannelVideos(channelId: string): Promise<YouTubeVideo[]> {
+  const res = await fetch(`https://www.youtube.com/channel/${channelId}/videos`, {
+    headers: SCRAPE_HEADERS,
+    next: { revalidate: 3600 },
+    signal: AbortSignal.timeout(8000)
+  });
+  if (!res.ok) return [];
+
+  const html = await res.text();
+  const dataMatch = html.match(/var ytInitialData = (\{[\s\S]*?\});<\/script>/);
+  if (!dataMatch) return [];
+
+  const lockups: any[] = [];
+  const walk = (node: any) => {
+    if (Array.isArray(node)) {
+      node.forEach(walk);
+    } else if (node && typeof node === 'object') {
+      if (node.lockupViewModel) lockups.push(node.lockupViewModel);
+      Object.values(node).forEach(walk);
+    }
+  };
+  walk(JSON.parse(dataMatch[1]));
+
+  const seen = new Set<string>();
+  const videos: YouTubeVideo[] = [];
+  for (const lockup of lockups) {
+    const id: string | undefined = lockup.contentId;
+    if (!id || lockup.contentType !== 'LOCKUP_CONTENT_TYPE_VIDEO' || seen.has(id)) continue;
+    seen.add(id);
+
+    const meta = lockup.metadata?.lockupMetadataViewModel;
+    const title: string = meta?.title?.content ?? '';
+    const parts: any[] = (meta?.metadata?.contentMetadataViewModel?.metadataRows ?? [])
+      .flatMap((row: any) => row.metadataParts ?? []);
+    const labels = parts.map((p) => p.accessibilityLabel || p.text?.content || '');
+    const viewsLabel = labels.find((l) => /view/i.test(l)) ?? '';
+    const timeLabel = labels.find((l) => /ago/i.test(l)) ?? '';
+
+    videos.push({
+      id,
+      title,
+      description: '',
+      publishedAt: relativeTimeToIso(timeLabel),
+      thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+      views: parseInt(viewsLabel.replace(/[^\d]/g, ''), 10) || 0,
+      category: detectVideoCategory(title)
+    });
+  }
+  return videos;
+}
+
 /**
  * Dynamically fetches YouTube feed and channel information for any handle or channel ID.
  */
@@ -157,51 +238,45 @@ export async function fetchYouTubeFeed(identifier: string = DEFAULT_HANDLE): Pro
   const channelUrl = `https://www.youtube.com/${handle}`;
   const subscribeUrl = `https://www.youtube.com/${handle}?sub_confirmation=1`;
 
+  let channelName = DEFAULT_CHANNEL_NAME;
+  let videos: YouTubeVideo[] = [];
+
   try {
     const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, {
       next: { revalidate: 3600 },
       signal: AbortSignal.timeout(5000)
     });
 
-    if (!res.ok) {
-      return {
-        channel: {
-          id: channelId,
-          name: DEFAULT_CHANNEL_NAME,
-          handle,
-          url: channelUrl,
-          subscribeUrl
-        },
-        videos: []
-      };
+    if (res.ok) {
+      const parsed = parseYouTubeRss(await res.text());
+      channelName = parsed.channelName || DEFAULT_CHANNEL_NAME;
+      videos = parsed.videos;
+    } else {
+      console.warn(`fetchYouTubeFeed: RSS feed returned ${res.status} for channel "${channelId}"`);
     }
-
-    const xml = await res.text();
-    const parsed = parseYouTubeRss(xml);
-
-    return {
-      channel: {
-        id: channelId,
-        name: parsed.channelName || DEFAULT_CHANNEL_NAME,
-        handle,
-        url: channelUrl,
-        subscribeUrl
-      },
-      videos: parsed.videos
-    };
   } catch (error) {
     console.warn(`fetchYouTubeFeed: Error fetching feed for channel "${channelId}":`, error);
-    return {
-      channel: {
-        id: channelId,
-        name: DEFAULT_CHANNEL_NAME,
-        handle,
-        url: channelUrl,
-        subscribeUrl
-      },
-      videos: []
-    };
   }
+
+  // YouTube's RSS endpoint is intermittently down (404/500); fall back to the channel page
+  if (videos.length === 0) {
+    try {
+      videos = await scrapeChannelVideos(channelId);
+    } catch (error) {
+      console.warn(`fetchYouTubeFeed: Fallback scrape failed for channel "${channelId}":`, error);
+    }
+  }
+
+  return {
+    channel: {
+      id: channelId,
+      name: channelName,
+      handle,
+      url: channelUrl,
+      subscribeUrl
+    },
+    videos
+  };
 }
 
 /**

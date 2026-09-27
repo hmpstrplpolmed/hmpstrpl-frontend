@@ -651,7 +651,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                                         name: 'YouTube',
                                                         desc: 'Video rekaman, live-session & webinar internal',
                                                         icon: <FaYoutube className="text-xl text-[#FF0000]" />,
-                                                        link: 'https://www.youtube.com/@hmpstrpl',
+                                                        link: 'https://www.youtube.com/@hmpstrplpolmed',
                                                         btn: 'Subscribe YT',
                                                         color: 'hover:border-[#FF0000]/40'
                                                     },
