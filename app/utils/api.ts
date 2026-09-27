@@ -422,6 +422,66 @@ export const mockStrukturOrganisasi: Record<string, ManagementYear> = {
             photo: ''
           }
         ]
+      },
+      {
+        id: 5,
+        name: 'Hubungan Keagamaan',
+        alias: 'keagamaan',
+        members: [
+          {
+            uuid: 'm-26-5',
+            name: 'Ahmad Fauzi',
+            nim: '2305181042',
+            position: { id: 5, name: 'Kepala Divisi' },
+            bio: 'Mengkoordinir kegiatan kerohanian dan penguatan nilai toleransi.',
+            photo: ''
+          }
+        ]
+      },
+      {
+        id: 6,
+        name: 'Back & Event Support',
+        alias: 'business-event-sponsorship',
+        members: [
+          {
+            uuid: 'm-26-6',
+            name: 'Daffa Pratama',
+            nim: '2305181050',
+            position: { id: 5, name: 'Kepala Divisi' },
+            bio: 'Mengelola operasional logistik, teknis perlengkapan acara, dan kelancaran event himpunan.',
+            photo: ''
+          }
+        ]
+      },
+      {
+        id: 7,
+        name: 'Minat & Bakat',
+        alias: 'minat-dan-bakat',
+        members: [
+          {
+            uuid: 'm-26-7',
+            name: 'Kevin Jonathan',
+            nim: '2305181061',
+            position: { id: 5, name: 'Kepala Divisi' },
+            bio: 'Mewadahi kompetisi e-sports, olahraga, dan seni mahasiswa TRPL.',
+            photo: ''
+          }
+        ]
+      },
+      {
+        id: 8,
+        name: 'POSDM',
+        alias: 'pengembangan-organisasi-dan-sumber-daya-mahasiswa',
+        members: [
+          {
+            uuid: 'm-26-8',
+            name: 'Nabila Zahra',
+            nim: '2305181075',
+            position: { id: 5, name: 'Kepala Divisi' },
+            bio: 'Fokus pada kaderisasi organisasi dan peningkatan kompetensi kepengurusan.',
+            photo: ''
+          }
+        ]
       }
     ]
   },

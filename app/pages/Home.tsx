@@ -32,7 +32,23 @@ import type { SlideData } from '../utils/slides';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CiLocationOn } from 'react-icons/ci';
-import { FaDiscord, FaGithub, FaInstagram, FaYoutube, FaFacebook, FaWhatsapp } from 'react-icons/fa6';
+import {
+    FaDiscord,
+    FaGithub,
+    FaInstagram,
+    FaYoutube,
+    FaFacebook,
+    FaWhatsapp,
+    FaUserTie,
+    FaLaptopCode,
+    FaBullhorn,
+    FaHandsPraying,
+    FaHandshake,
+    FaCalendarCheck,
+    FaTrophy,
+    FaUsersGear,
+    FaArrowRight
+} from 'react-icons/fa6';
 
 interface HomeProps {
     slides: SlideData[];
@@ -49,7 +65,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
     // Active meme index for the interactive meme slide
     const [memeIndex, setMemeIndex] = useState(0);
     const [visiMisiTab, setVisiMisiTab] = useState<'visi' | 'misi'>('visi');
-    const [divisionTab, setDivisionTab] = useState<'bph' | 'iptek' | 'kominfo'>('bph');
+    const [divisionTab, setDivisionTab] = useState<string>('all');
 
     // Layout coordinate mapping:
     // Slide 0 (Hero): row 0, col 0
@@ -280,7 +296,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                     return (
                         <div
                             key={index}
-                            className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden flex flex-col justify-start md:justify-center items-center px-4 md:px-12 pt-24 pb-28 md:py-24 transition-all duration-700 ease-out"
+                            className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden flex flex-col justify-start items-center px-4 md:px-12 pt-24 pb-24 md:pt-24 md:pb-16 transition-all duration-700 ease-out"
                             style={{
                                 WebkitOverflowScrolling: 'touch',
                                 transform: `translate(${dx * 100}%, ${dy * 100}%)`,
@@ -317,7 +333,7 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                 );
                             })}
 
-                            <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
+                            <div className="w-full max-w-5xl mx-auto my-auto flex flex-col gap-6">
 
                                 {/* 1. HERO SLIDE (0, 0) */}
                                 {s.id === 'hero' && (
@@ -692,90 +708,364 @@ export const Home = ({ slides: slideFiles }: HomeProps) => {
                                 )}
 
                                 {/* 5. DIVISIONS SLIDE (1, 3) */}
-                                {s.id === 'divisions' && (
-                                    <VStack gap={5} align="stretch" className="w-full">
-                                        <HStack justify="between" align="end">
-                                            <VStack gap={1} align="start">
-                                                <HStack gap={2} align="center">
-                                                    <Badge variant="blue" label={s.badge} />
-                                                    <Badge variant="neutral" label="Periode 2026-2027" />
-                                                </HStack>
-                                                <Heading level={1} className="text-primary font-sans leading-tight mt-0.5">{s.title}</Heading>
-                                            </VStack>
-                                            <Text type="supporting" color="disabled" className="text-xs font-mono">Slide {index + 1} dari {slides.length}</Text>
-                                        </HStack>
-                                        <Divider />
-                                        <Text type="body" color="secondary" className="font-sans max-w-xl text-justify text-xs md:text-sm leading-relaxed hidden md:block">
-                                            {s.description || 'HMPS TRPL terdiri dari berbagai departemen khusus yang bergerak secara sinergis mengurus program kerja internal dan eksternal.'}
-                                        </Text>
+                                {s.id === 'divisions' && (() => {
+                                    const ALL_DIVISIONS = [
+                                        {
+                                            key: 'bph',
+                                            name: 'Badan Pengurus Harian (BPH)',
+                                            short: 'BPH',
+                                            desc: 'Memimpin koordinasi organisasi, administrasi persuratan, notulensi rapat, dan transparansi keuangan kas HMPS.',
+                                            badge: 'Utama',
+                                            color: 'neutral' as const,
+                                            icon: <FaUserTie className="text-sm text-neutral-300" />,
+                                            alias: 'badan-pengurus-harian'
+                                        },
+                                        {
+                                            key: 'iptek',
+                                            name: 'Divisi IPTEK',
+                                            short: 'IPTEK',
+                                            desc: 'Mengembangkan riset teknologi software, bootcamps pemrograman, serta mengasah keterampilan teknis mahasiswa TRPL.',
+                                            badge: 'Keilmuan',
+                                            color: 'blue' as const,
+                                            icon: <FaLaptopCode className="text-sm text-blue-400" />,
+                                            alias: 'ilmu-pengetahun-dan-teknologi'
+                                        },
+                                        {
+                                            key: 'kominfo',
+                                            name: 'Divisi KOMINFO',
+                                            short: 'KOMINFO',
+                                            desc: 'Mengelola publikasi media sosial, branding visual kreatif, dokumentasi kegiatan, serta relasi informasi eksternal.',
+                                            badge: 'Informasi',
+                                            color: 'purple' as const,
+                                            icon: <FaBullhorn className="text-sm text-purple-400" />,
+                                            alias: 'komunikasi-dan-informasi'
+                                        },
+                                        {
+                                            key: 'keagamaan',
+                                            name: 'Keagamaan',
+                                            short: 'Keagamaan',
+                                            desc: 'Mempererat toleransi, pembinaan karakter moral, serta kegiatan kerohanian mahasiswa TRPL.',
+                                            badge: 'Kerohanian',
+                                            color: 'green' as const,
+                                            icon: <FaHandsPraying className="text-sm text-emerald-400" />,
+                                            alias: 'keagamaan'
+                                        },
+                                        {
+                                            key: 'bes',
+                                            name: 'Back & Event Support (BES)',
+                                            short: 'BES',
+                                            desc: 'Mengelola operasional logistik, perlengkapan teknis panggung, dan kelancaran event himpunan.',
+                                            badge: 'Event & Support',
+                                            color: 'orange' as const,
+                                            icon: <FaCalendarCheck className="text-sm text-amber-400" />,
+                                            alias: 'business-event-sponsorship'
+                                        },
+                                        {
+                                            key: 'minbat',
+                                            name: 'Minat & Bakat (MINBAT)',
+                                            short: 'MINBAT',
+                                            desc: 'Wadah penyaluran bakat mahasiswa dalam e-sports, olahraga, kesenian, dan kompetisi non-akademik.',
+                                            badge: 'Kreativitas',
+                                            color: 'pink' as const,
+                                            icon: <FaTrophy className="text-sm text-pink-400" />,
+                                            alias: 'minat-dan-bakat'
+                                        },
+                                        {
+                                            key: 'posdm',
+                                            name: 'Divisi POSDM',
+                                            short: 'POSDM',
+                                            desc: 'Fokus pada kaderisasi organisasi, evaluasi pengurus, serta peningkatan mutu sumber daya mahasiswa TRPL.',
+                                            badge: 'Kaderisasi',
+                                            color: 'teal' as const,
+                                            icon: <FaUsersGear className="text-sm text-teal-400" />,
+                                            alias: 'pengembangan-organisasi-dan-sumber-daya-mahasiswa'
+                                        }
+                                    ];
 
-                                        {/* Mobile Division Tab Switcher */}
-                                        <div className="md:hidden flex justify-center mt-1">
-                                            <SegmentedControl
-                                                label="Division Selection"
-                                                value={divisionTab}
-                                                onChange={(val: string) => setDivisionTab(val as any)}
-                                                size="sm"
+                                    const selectedDiv = ALL_DIVISIONS.find(d => d.key === divisionTab);
+
+                                    return (
+                                        <VStack gap={2} align="stretch" className="w-full">
+                                            <HStack justify="between" align="end">
+                                                <VStack gap={0.5} align="start">
+                                                    <HStack gap={2} align="center">
+                                                        <Badge variant="blue" label={s.badge} />
+                                                        <Badge variant="neutral" label="Periode 2026-2027" />
+                                                    </HStack>
+                                                    <Heading level={1} className="text-primary font-sans leading-tight mt-0.5 text-2xl md:text-3xl">{s.title}</Heading>
+                                                </VStack>
+                                                <Text type="supporting" color="disabled" className="text-xs font-mono">Slide {index + 1} dari {slides.length}</Text>
+                                            </HStack>
+                                            <Divider />
+                                            <Text type="body" color="secondary" className="font-sans max-w-2xl text-justify text-xs leading-normal hidden md:block">
+                                                {s.description || 'HMPS TRPL terdiri dari berbagai departemen khusus yang bergerak secara sinergis mengurus program kerja internal dan eksternal.'}
+                                            </Text>
+
+                                            {/* Horizontal Scrollable Division Filter Pills (Mobile & Desktop) */}
+                                            <div
+                                                className="flex items-center gap-1.5 overflow-x-auto py-1 w-full max-w-full touch-pan-x"
+                                                data-interactive="true"
+                                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                             >
-                                                <SegmentedControlItem value="bph" label="BPH" />
-                                                <SegmentedControlItem value="iptek" label="IPTEK" />
-                                                <SegmentedControlItem value="kominfo" label="KOMINFO" />
-                                            </SegmentedControl>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-1">
-                                            {[
-                                                {
-                                                    key: 'bph',
-                                                    name: 'Badan Pengurus Harian (BPH)',
-                                                    desc: 'Memimpin koordinasi organisasi, administrasi persuratan, notulensi rapat, dan transparansi keuangan kas HMPS.',
-                                                    badge: 'Utama',
-                                                    color: 'neutral' as const,
-                                                    alias: 'badan-pengurus-harian'
-                                                },
-                                                {
-                                                    key: 'iptek',
-                                                    name: 'Divisi IPTEK',
-                                                    desc: 'Mengembangkan riset teknologi software, bootcamps pemrograman, serta mengasah keterampilan teknis mahasiswa TRPL.',
-                                                    badge: 'Keilmuan',
-                                                    color: 'blue' as const,
-                                                    alias: 'ilmu-pengetahun-dan-teknologi'
-                                                },
-                                                {
-                                                    key: 'kominfo',
-                                                    name: 'Divisi KOMINFO',
-                                                    desc: 'Mengelola publikasi media sosial, branding visual kreatif, dokumentasi kegiatan, serta relasi komunikasi informasi eksternal.',
-                                                    badge: 'Informasi',
-                                                    color: 'purple' as const,
-                                                    alias: 'komunikasi-dan-informasi'
-                                                }
-                                            ].map((div) => (
-                                                <Card
-                                                    key={div.key}
-                                                    variant="muted"
-                                                    padding={isMobile ? 3 : 4}
-                                                    className={`flex flex-col justify-between h-full transition-all duration-200 hover:border-accent/40 ${isMobile && divisionTab !== div.key ? 'hidden' : 'flex'}`}
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setDivisionTab('all');
+                                                    }}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-sans whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                                                        divisionTab === 'all'
+                                                            ? 'bg-accent text-white font-semibold shadow-xs'
+                                                            : 'bg-surface/80 text-secondary hover:text-primary hover:bg-surface border border-border/40 font-normal'
+                                                    }`}
                                                 >
-                                                    <VStack gap={2} align="start">
-                                                        <Badge variant={div.color} label={div.badge} />
-                                                        <Heading level={3} className="text-primary mt-1 text-sm md:text-base font-bold font-sans">{div.name}</Heading>
-                                                        <Text type="body" color="secondary" className="font-sans text-xs leading-relaxed text-justify">
-                                                            {div.desc}
-                                                        </Text>
-                                                    </VStack>
-                                                    <div className="mt-4 pt-3 border-t border-border/50">
-                                                        <Link
-                                                            href={`/organisasi/2026-2027/${div.alias}`}
-                                                            className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1"
+                                                    Semua (7)
+                                                </button>
+                                                {ALL_DIVISIONS.map((div) => {
+                                                    const isActive = divisionTab === div.key;
+                                                    return (
+                                                        <button
+                                                            key={div.key}
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setDivisionTab(div.key);
+                                                            }}
+                                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-sans whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                                                                isActive
+                                                                    ? 'bg-accent text-white font-semibold shadow-xs'
+                                                                    : 'bg-surface/80 text-secondary hover:text-primary hover:bg-surface border border-border/40 font-normal'
+                                                            }`}
                                                         >
-                                                            Lihat Roster Staff &rarr;
-                                                        </Link>
-                                                    </div>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    </VStack>
-                                )}
+                                                            <span className="opacity-80">{div.icon}</span>
+                                                            <span>{div.short}</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* Mobile View: Rendered when isMobile */}
+                                            {isMobile ? (
+                                                <div className="flex flex-col gap-3 w-full">
+                                                    {divisionTab === 'all' ? (
+                                                        <>
+                                                            {ALL_DIVISIONS.map((div) => (
+                                                                <Card
+                                                                    key={div.key}
+                                                                    variant="muted"
+                                                                    padding={3}
+                                                                    className="flex flex-col justify-between w-full border border-border/40 hover:border-accent/40 transition-all duration-200"
+                                                                >
+                                                                    <VStack gap={2} align="start">
+                                                                        <div className="flex items-center justify-between w-full">
+                                                                            <HStack gap={2} align="center">
+                                                                                <div className="p-1.5 rounded-lg bg-surface/70 border border-border/30 flex items-center justify-center shrink-0">
+                                                                                    {div.icon}
+                                                                                </div>
+                                                                                <Heading level={3} className="text-primary text-xs font-bold font-sans">
+                                                                                    {div.name}
+                                                                                </Heading>
+                                                                            </HStack>
+                                                                            <Badge variant={div.color} label={div.badge} />
+                                                                        </div>
+                                                                        <Text type="body" color="secondary" className="font-sans text-[11px] leading-relaxed text-justify">
+                                                                            {div.desc}
+                                                                        </Text>
+                                                                    </VStack>
+                                                                    <div className="mt-2.5 pt-2 border-t border-border/30 flex items-center justify-between">
+                                                                        <Link
+                                                                            href={`/organisasi/2026-2027/${div.alias}`}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            className="text-[11px] font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1"
+                                                                        >
+                                                                            Lihat Roster Staff <FaArrowRight className="text-[9px]" />
+                                                                        </Link>
+                                                                        <span className="text-[10px] text-disabled font-mono">2026/2027</span>
+                                                                    </div>
+                                                                </Card>
+                                                            ))}
+
+                                                            {/* Card Hub Struktur Lengkap */}
+                                                            <Card
+                                                                variant="default"
+                                                                padding={3}
+                                                                className="flex flex-col justify-between w-full border border-accent/40 bg-accent/5 hover:bg-accent/10 transition-all duration-200"
+                                                            >
+                                                                <VStack gap={1.5} align="start">
+                                                                    <Badge variant="blue" label="Bagan & Hierarki" />
+                                                                    <Heading level={3} className="text-primary text-xs font-bold font-sans">
+                                                                        Struktur Organisasi Lengkap 2026–2027
+                                                                    </Heading>
+                                                                    <Text type="body" color="secondary" className="font-sans text-[11px] leading-relaxed text-justify">
+                                                                        Lihat bagan hierarki, seluruh fungsionaris, dan pembina prodi periode 2026/2027.
+                                                                    </Text>
+                                                                </VStack>
+                                                                <div className="mt-2.5 pt-2 border-t border-border/30">
+                                                                    <Link
+                                                                        href="/organisasi/2026-2027"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        className="text-[11px] font-bold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1.5"
+                                                                    >
+                                                                        Buka Struktur Lengkap <FaArrowRight className="text-[9px]" />
+                                                                    </Link>
+                                                                </div>
+                                                            </Card>
+                                                        </>
+                                                    ) : selectedDiv ? (
+                                                        <VStack gap={3} align="stretch" className="w-full">
+                                                            {/* Featured Selected Division Card */}
+                                                            <Card
+                                                                variant="default"
+                                                                padding={4}
+                                                                className="flex flex-col justify-between w-full border-2 border-accent/60 bg-surface/90 shadow-sm transition-all duration-200"
+                                                            >
+                                                                <VStack gap={2} align="start">
+                                                                    <div className="flex items-center justify-between w-full">
+                                                                        <div className="p-2 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
+                                                                            {selectedDiv.icon}
+                                                                        </div>
+                                                                        <Badge variant={selectedDiv.color} label={selectedDiv.badge} />
+                                                                    </div>
+                                                                    <Heading level={2} className="text-primary text-sm font-bold font-sans">
+                                                                        {selectedDiv.name}
+                                                                    </Heading>
+                                                                    <Text type="body" color="secondary" className="font-sans text-xs leading-relaxed text-justify">
+                                                                        {selectedDiv.desc}
+                                                                    </Text>
+                                                                </VStack>
+                                                                <div className="mt-3.5 pt-2.5 border-t border-border/40 flex items-center justify-between">
+                                                                    <Link
+                                                                        href={`/organisasi/2026-2027/${selectedDiv.alias}`}
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        className="text-xs font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1.5"
+                                                                    >
+                                                                        Lihat Roster Staff {selectedDiv.short} <FaArrowRight className="text-[10px]" />
+                                                                    </Link>
+                                                                    <span className="text-[10px] text-disabled font-mono">Periode 2026/2027</span>
+                                                                </div>
+                                                            </Card>
+
+                                                            {/* Cross-navigation: Other Divisions Grid (Zero dead space!) */}
+                                                            <VStack gap={2} align="stretch" className="w-full">
+                                                                <HStack justify="between" align="center">
+                                                                    <Text type="supporting" color="secondary" className="text-[11px] font-semibold uppercase tracking-wider">
+                                                                        Divisi Lainnya:
+                                                                    </Text>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setDivisionTab('all');
+                                                                        }}
+                                                                        className="text-[11px] text-accent font-semibold hover:underline cursor-pointer"
+                                                                    >
+                                                                        Tampilkan Semua (7)
+                                                                    </button>
+                                                                </HStack>
+                                                                <div className="grid grid-cols-2 gap-2 w-full">
+                                                                    {ALL_DIVISIONS.filter(d => d.key !== selectedDiv.key).map((other) => (
+                                                                        <button
+                                                                            key={other.key}
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setDivisionTab(other.key);
+                                                                            }}
+                                                                            className="p-2.5 rounded-xl bg-surface/60 hover:bg-surface border border-border/40 hover:border-accent/40 transition-all flex items-center gap-2 text-left cursor-pointer"
+                                                                        >
+                                                                            <div className="p-1 rounded-md bg-surface/80 text-xs shrink-0">
+                                                                                {other.icon}
+                                                                            </div>
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="text-[11px] font-bold text-primary truncate font-sans">
+                                                                                    {other.short}
+                                                                                </div>
+                                                                                <div className="text-[9px] text-secondary truncate">
+                                                                                    {other.badge}
+                                                                                </div>
+                                                                            </div>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </VStack>
+                                                        </VStack>
+                                                    ) : null}
+                                                </div>
+                                            ) : (
+                                                /* Desktop View: Balanced 4-column x 2-row Responsive Grid */
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-3 mt-0.5">
+                                                    {ALL_DIVISIONS.map((div) => {
+                                                        const isHighlighted = divisionTab === 'all' || divisionTab === div.key;
+                                                        const isDimmed = divisionTab !== 'all' && divisionTab !== div.key;
+                                                        return (
+                                                            <Card
+                                                                key={div.key}
+                                                                variant="muted"
+                                                                padding={3}
+                                                                className={`flex flex-col justify-between h-full transition-all duration-200 hover:border-accent/40 ${
+                                                                    isDimmed ? 'opacity-40 hover:opacity-100' : 'opacity-100'
+                                                                } ${divisionTab === div.key ? 'border-accent ring-1 ring-accent/40 shadow-xs' : 'border-border/40'}`}
+                                                            >
+                                                                <VStack gap={1} align="start">
+                                                                    <HStack justify="between" align="center" className="w-full">
+                                                                        <div className="p-1.5 rounded-lg bg-surface/70 border border-border/30 flex items-center justify-center">
+                                                                            {div.icon}
+                                                                        </div>
+                                                                        <Badge variant={div.color} label={div.badge} />
+                                                                    </HStack>
+                                                                    <Heading level={3} className="text-primary mt-0.5 text-xs font-bold font-sans line-clamp-1">
+                                                                        {div.name}
+                                                                    </Heading>
+                                                                    <Text type="body" color="secondary" className="font-sans text-[11px] leading-snug line-clamp-2 lg:line-clamp-3 text-justify">
+                                                                        {div.desc}
+                                                                    </Text>
+                                                                </VStack>
+                                                                <div className="mt-2 pt-1.5 border-t border-border/30 flex items-center justify-between">
+                                                                    <Link
+                                                                        href={`/organisasi/2026-2027/${div.alias}`}
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        className="text-[11px] font-semibold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1"
+                                                                    >
+                                                                        Lihat Roster Staff <FaArrowRight className="text-[9px]" />
+                                                                    </Link>
+                                                                    <span className="text-[10px] text-disabled font-mono">2026/2027</span>
+                                                                </div>
+                                                            </Card>
+                                                        );
+                                                    })}
+
+                                                    {/* 8th Card: Full Structure Hub */}
+                                                    <Card
+                                                        variant="default"
+                                                        padding={3}
+                                                        className={`flex flex-col justify-between h-full border border-accent/40 bg-accent/5 hover:bg-accent/10 transition-all duration-200 ${
+                                                            divisionTab !== 'all' ? 'opacity-40 hover:opacity-100' : 'opacity-100'
+                                                        }`}
+                                                    >
+                                                        <VStack gap={1} align="start">
+                                                            <Badge variant="blue" label="Bagan & Hierarki" />
+                                                            <Heading level={3} className="text-primary mt-0.5 text-xs font-bold font-sans line-clamp-1">
+                                                                Struktur Lengkap Kabinet
+                                                            </Heading>
+                                                            <Text type="body" color="secondary" className="font-sans text-[11px] leading-snug line-clamp-2 lg:line-clamp-3 text-justify">
+                                                                Telusuri bagan hierarki, seluruh fungsionaris, dan pembina prodi periode 2026/2027.
+                                                            </Text>
+                                                        </VStack>
+                                                        <div className="mt-2 pt-1.5 border-t border-border/30">
+                                                            <Link
+                                                                href="/organisasi/2026-2027"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="text-[11px] font-bold text-accent hover:text-primary transition-colors decoration-none font-sans flex items-center gap-1"
+                                                            >
+                                                                Buka Struktur Lengkap <FaArrowRight className="text-[9px]" />
+                                                            </Link>
+                                                        </div>
+                                                    </Card>
+                                                </div>
+                                            )}
+                                        </VStack>
+                                    );
+                                })()}
 
                                 {/* 6. ARTICLES SLIDE (1, 4) */}
                                 {s.id === 'articles' && (
